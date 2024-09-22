@@ -33,9 +33,9 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 git clone https://github.com/byarpar/ToDoListback.git
-cd ToDoListback
+cd todo-list-backend
 npm intall
-npm run dev
+npm start
 
 
 
