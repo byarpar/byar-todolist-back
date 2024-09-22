@@ -1,6 +1,6 @@
-# Contact Management and To-Do List Backend API
+# To-Do List Backend API
 
-This is the backend API for the Contact Management and To-Do List application. It is built using Node.js, Express, and MongoDB. The API provides endpoints to manage contacts (CRUD operations), including adding, editing, deleting, and fetching contacts. The application is scalable and can be deployed on cloud platforms like Heroku or AWS.
+This is the backend API for the Contact Management and To-Do List application. It is built using Node.js, Express, and MongoDB. The API provides endpoints to manage contacts (CRUD operations), including adding, editing, deleting, and fetching contacts. 
 
 ## Features
 
