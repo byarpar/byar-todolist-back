@@ -1,24 +1,21 @@
 import express from 'express';
 import mysql from 'mysql2';
 import bodyParser from 'body-parser';
+import routes from './src/routes/crmRoutes';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import contactRoutes from './routes/contactRoutes.js';
-
-dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Use process.env.PORT for deployment flexibility
 
-app.use(cors());
-app.use(bodyParser.json());
+app.use(cors()); // Enable CORS
 
-// MySQL connection setup
+// MySQL connection
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,    // MySQL host from Railway environment variable
+    user: process.env.DB_USER,    // MySQL user from Railway environment variable
+    password: process.env.DB_PASSWORD, // MySQL password from Railway environment variable
+    database: process.env.DB_NAME, // MySQL database name from Railway environment variable
+    port: process.env.DB_PORT      // MySQL port from Railway environment variable (usually 3306)
 });
 
 // Connect to MySQL
@@ -27,11 +24,22 @@ db.connect((err) => {
         console.error('MySQL connection error:', err);
         return;
     }
-    console.log('Connected to MySQL database!');
+    console.log('Connected to MySQL database on Railway!');
 });
 
-app.use('/contact', contactRoutes(db));
+// Body parser setup
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Routes setup
+routes(app);
+
+// Basic route
+app.get('/', (req, res) => 
+    res.send(`Node and express server is running on port ${PORT}`)
+);
+
+// Listen on the specified port
+app.listen(PORT, () => 
+    console.log(`Your server is running on port ${PORT}`)
+);
