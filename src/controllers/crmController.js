@@ -1,63 +1,51 @@
-import mongoose from 'mongoose';
-import { ContactSchema } from '../models/crmModel';
+import { ContactModel } from '../models/crmModel';
 
-const Contact = mongoose.model('Contact', ContactSchema);
-
-export const addNewContact = async (req, res) => {
+export const addNewContact = async (req, res, db) => {
+    const contactModel = new ContactModel(db);
     try {
-        const newContact = new Contact(req.body);
-        const contact = await newContact.save();
+        const contact = await contactModel.addContact(req.body);
         res.status(201).json(contact);
     } catch (err) {
-        res.status(500).send({ message: 'Error saving contact', error: err });
+        res.status(500).send({ message: err.message });
     }
 };
 
-export const getContacts = async (req, res) => {
+export const getContacts = async (req, res, db) => {
+    const contactModel = new ContactModel(db);
     try {
-        const contacts = await Contact.find().exec();
+        const contacts = await contactModel.getAllContacts();
         res.json(contacts);
     } catch (err) {
-        res.status(500).send({ message: 'Error retrieving contacts', error: err });
+        res.status(500).send({ message: err.message });
     }
 };
 
-export const getContactWithID = async (req, res) => {
+export const getContactWithID = async (req, res, db) => {
+    const contactModel = new ContactModel(db);
     try {
-        const contact = await Contact.findById(req.params.contactId).exec();
-        if (!contact) {
-            return res.status(404).send({ message: 'Contact not found' });
-        }
+        const contact = await contactModel.getContactById(req.params.contactId);
         res.json(contact);
     } catch (err) {
-        res.status(500).send({ message: 'Error retrieving contact', error: err });
+        res.status(404).send({ message: err.message });
     }
 };
 
-export const updateContact = async (req, res) => {
+export const updateContact = async (req, res, db) => {
+    const contactModel = new ContactModel(db);
     try {
-        const contact = await Contact.findOneAndUpdate(
-            { _id: req.params.contactId },
-            req.body,
-            { new: true, runValidators: true }
-        ).exec();
-        if (!contact) {
-            return res.status(404).send({ message: 'Contact not found' });
-        }
+        const contact = await contactModel.updateContact(req.params.contactId, req.body);
         res.json(contact);
     } catch (err) {
-        res.status(500).send({ message: 'Error updating contact', error: err });
+        res.status(500).send({ message: err.message });
     }
 };
 
-export const deleteContact = async (req, res) => {
+export const deleteContact = async (req, res, db) => {
+    const contactModel = new ContactModel(db);
     try {
-        const result = await Contact.deleteOne({ _id: req.params.contactId }).exec();
-        if (result.deletedCount === 0) {
-            return res.status(404).send({ message: 'Contact not found' });
-        }
-        res.json({ message: 'Successfully deleted contact' });
+        const message = await contactModel.deleteContact(req.params.contactId);
+        res.json(message);
     } catch (err) {
-        res.status(500).send({ message: 'Error deleting contact', error: err });
+        res.status(500).send({ message: err.message });
     }
 };
