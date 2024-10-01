@@ -1,3 +1,5 @@
+// src/controllers/crmController.js
+
 export const getContacts = async (req, res, pool) => {
     try {
         const [rows] = await pool.query('SELECT * FROM contacts');
