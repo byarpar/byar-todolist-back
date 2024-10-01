@@ -1,32 +1,40 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import routes from './src/routes/crmRoutes';
+import mysql from 'mysql2';
 import cors from 'cors';
+import dotenv from 'dotenv';
 
+dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
+app.use(cors());
+app.use(express.json()); // Parse JSON requests
 
+// MySQL connection
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+});
 
-app.use(cors()); // Enable CORS
-// mongoose connection
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/CRMdb')
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
+// Connect to MySQL
+connection.connect((err) => {
+    if (err) {
+        console.error('Error connecting to MySQL:', err);
+        return;
+    }
+    console.log('Connected to MySQL database!');
+});
 
-// bodyparser setup
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// Example route
+app.get('/', (req, res) => {
+    res.send('Node.js MySQL API is running!');
+});
 
-routes(app);
-
-app.get('/', (req, res) => 
-    res.send(`Node and express server is running on port ${PORT}`)
-);
-
-app.listen(PORT, () => 
-    console.log(`Your server is running on port ${PORT}`)
-);
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
